@@ -1,10 +1,5 @@
 # 📖 LiterAlura - Interactive Book Management System
 
-![Java](https://img.shields.io/badge/Java-25-orange)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.13-green)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)
-
 Welcome to **LiterAlura**! This is a backend application developed in Java 25 with Spring Boot that serves as an interactive book catalog via console. The system consumes the public **Gutendex** API (Project Gutenberg), processes the data, and persists it in a relational database (PostgreSQL) for future queries.
 
 ## Features

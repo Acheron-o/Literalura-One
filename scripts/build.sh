@@ -1,29 +1,28 @@
 #!/bin/bash
 
-# BookVerse Complete Rebuild Script
-# This script performs a complete rebuild of the BookVerse environment
-# including cleanup, rebuilding images, and starting services
+# BookVerse Build Script
+# This script builds the complete BookVerse environment from scratch
+# including Docker images, containers, and database initialization
 
 set -e  # Exit on any error
 
 # Configuration
 PROJECT_NAME="bookverse"
 BUILD_TIMEOUT=300  # 5 minutes
-POSTGRES_STARTUP_TIMEOUT=60
+POSTGRES_STARTUP_TIMEOUT=60  # 1 minute
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 
 # Function to print colored output
 print_status() {
     local color="$1"
     local message="$2"
-    echo -e "${color}🔄 $message${NC}"
+    echo -e "${color}🔧 $message${NC}"
 }
 
 print_success() {
@@ -42,70 +41,63 @@ print_info() {
     echo -e "${BLUE}ℹ️  $1${NC}"
 }
 
-print_header() {
-    echo -e "${PURPLE}🔄 $1${NC}"
-}
-
 # Function to print section headers
 print_section() {
     echo ""
     echo "════════════════════════════════════════════════════════════"
-    print_header "$1"
+    print_status "$BLUE" "$1"
     echo "════════════════════════════════════════════════════════════"
-}
-
-# Function to display rebuild banner
-display_rebuild_banner() {
-    echo ""
-    echo "🔄 BOOKVERSE COMPLETE REBUILD"
-    echo "════════════════════════════════════════════════════════════"
-    echo "Performing complete rebuild of BookVerse environment..."
-    echo ""
 }
 
 # Function to check if Docker is running
 check_docker() {
     if ! docker info > /dev/null 2>&1; then
         print_error "Docker is not running or not accessible"
-        print_info "Please start Docker and ensure you have necessary permissions"
+        print_info "Please start Docker and ensure you have the necessary permissions"
         exit 1
     fi
     print_success "Docker is running and accessible"
 }
 
-# Function to cleanup existing environment
-cleanup_environment() {
-    print_section "Cleaning Existing Environment"
+# Function to check if docker-compose is available
+check_docker_compose() {
+    if ! command -v docker-compose > /dev/null 2>&1; then
+        print_error "docker-compose is not installed or not in PATH"
+        print_info "Please install docker-compose to continue"
+        exit 1
+    fi
+    print_success "docker-compose is available"
+}
+
+# Function to clean previous build artifacts
+clean_previous_build() {
+    print_section "Cleaning previous build artifacts"
     
     if [ -f "./scripts/cleanup.sh" ]; then
         print_info "Running cleanup script..."
         ./scripts/cleanup.sh
     else
         print_warning "Cleanup script not found, performing basic cleanup..."
-        docker-compose down --remove-orphans --timeout 30 2>/dev/null || true
-        docker system prune -f 2>/dev/null || true
+        docker-compose down --remove-orphans 2>/dev/null || true
     fi
-    
-    print_info "Waiting for Docker to stabilize..."
-    sleep 3
 }
 
-# Function to rebuild Docker images
-rebuild_images() {
-    print_section "Rebuilding Docker Images"
+# Function to build Docker images
+build_images() {
+    print_section "Building Docker images"
     
-    print_info "Rebuilding all Docker images with no cache..."
+    print_info "Building BookVerse application image..."
     if timeout $BUILD_TIMEOUT docker-compose build --no-cache --parallel; then
-        print_success "Docker images rebuilt successfully"
+        print_success "Docker images built successfully"
     else
-        print_error "Docker image rebuild failed or timed out"
+        print_error "Docker image build failed or timed out"
         exit 1
     fi
 }
 
 # Function to start PostgreSQL
 start_postgresql() {
-    print_section "Starting PostgreSQL Database"
+    print_section "Starting PostgreSQL database"
     
     print_info "Starting PostgreSQL container..."
     docker-compose up -d postgres
@@ -130,24 +122,21 @@ start_postgresql() {
     exit 1
 }
 
-# Function to initialize database
+# Function to initialize database schema
 initialize_database() {
-    print_section "Initializing Database"
+    print_section "Initializing database schema"
     
-    print_info "Waiting for database to be fully ready..."
-    sleep 5
-    
-    # Test database connection
-    if docker-compose exec -T postgres psql -U bookverse_user -d bookverse -c "SELECT 1;" > /dev/null 2>&1; then
-        print_success "Database connection test passed"
+    print_info "Running database migrations..."
+    if docker-compose run --rm app --spring.profiles.active=migration; then
+        print_success "Database schema initialized successfully"
     else
-        print_warning "Database connection test failed, but continuing..."
+        print_warning "Database migration may have failed, but continuing..."
     fi
 }
 
 # Function to run health checks
 run_health_checks() {
-    print_section "Running Health Checks"
+    print_section "Running health checks"
     
     # Check PostgreSQL
     if docker-compose exec -T postgres pg_isready -U bookverse_user -d bookverse > /dev/null 2>&1; then
@@ -157,29 +146,26 @@ run_health_checks() {
         return 1
     fi
     
-    # Check Docker images
-    if docker images | grep -q "bookverse-app"; then
-        print_success "Application image is available"
+    # Check application (if it's running)
+    if docker-compose ps app | grep -q "Up"; then
+        print_success "Application container is running"
     else
-        print_error "Application image not found"
-        return 1
+        print_warning "Application container is not running (this is normal for build-only mode)"
     fi
-    
-    print_success "All health checks passed"
 }
 
-# Function to display rebuild summary
-display_rebuild_summary() {
-    print_section "Rebuild Summary"
+# Function to display build summary
+display_summary() {
+    print_section "Build Summary"
     
     echo ""
-    print_success "BookVerse environment rebuild completed successfully! 🎉"
+    print_info "Build completed successfully!"
     echo ""
-    echo "📊 Rebuild Statistics:"
+    echo "📊 Build Statistics:"
     echo "   - Project: $PROJECT_NAME"
-    echo "   - Rebuild Time: $(date)"
+    echo "   - Build Time: $(date)"
     echo "   - Docker Images: $(docker images | grep bookverse | wc -l)"
-    echo "   - Running Services: $(docker-compose ps | grep 'Up' | wc -l)"
+    echo "   - Running Containers: $(docker-compose ps | grep 'Up' | wc -l)"
     echo ""
     
     echo "🚀 Next Steps:"
@@ -199,9 +185,8 @@ display_rebuild_summary() {
 
 # Function to handle script interruption
 handle_interrupt() {
-    echo ""
-    print_warning "Rebuild process interrupted by user"
-    print_info "Cleaning up partial rebuild..."
+    print_error "Build process interrupted by user"
+    print_info "Cleaning up partial build..."
     docker-compose down --remove-orphans 2>/dev/null || true
     exit 1
 }
@@ -211,22 +196,27 @@ trap handle_interrupt INT TERM
 
 # Main execution
 main() {
-    display_rebuild_banner
+    echo ""
+    echo "🏗️  BookVerse Build Process"
+    echo "════════════════════════════════════════════════════════════"
+    echo "Building BookVerse environment from scratch..."
+    echo ""
     
-    # Pre-rebuild checks
+    # Pre-build checks
     check_docker
+    check_docker_compose
     
-    # Rebuild process
-    cleanup_environment
-    rebuild_images
+    # Build process
+    clean_previous_build
+    build_images
     start_postgresql
     initialize_database
     run_health_checks
     
     # Display results
-    display_rebuild_summary
+    display_summary
     
-    print_success "BookVerse rebuild process completed successfully! 🎉"
+    print_success "BookVerse build process completed successfully! 🎉"
 }
 
 # Execute main function

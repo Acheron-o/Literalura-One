@@ -1,0 +1,236 @@
+# BookVerse Application Configuration
+# Spring Boot configuration for different environments
+
+spring:
+  profiles:
+    active: default
+  
+  application:
+    name: BookVerse
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bookverse
+    username: bookverse_user
+    password: bookverse_pass
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      connection-timeout: 20000
+      leak-detection-threshold: 60000
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+    open-in-view: false
+  
+  validation:
+    mode: auto
+  
+  task:
+    execution:
+      pool:
+        core-size: 4
+        max-size: 16
+        queue-capacity: 100
+        keep-alive: 60s
+        thread-name-prefix: bookverse-
+  
+  cache:
+    type: simple
+    cache-names: books,authors,api-cache
+  
+  web:
+    resources:
+      add-mappings: false
+
+# Application-specific configuration
+bookverse:
+  api:
+    gutendex:
+      base-url: https://gutendex.com
+      timeout: 30s
+      retry-attempts: 3
+      retry-delay: 1s
+    cache:
+      ttl: 3600s
+      max-size: 1000
+  
+  console:
+    enabled: true
+    prompt: "BookVerse> "
+  
+  logging:
+    level: INFO
+    file: logs/bookverse.log
+    max-size: 10MB
+    max-files: 5
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
+# Logging configuration
+logging:
+  level:
+    com.bookverse: INFO
+    org.springframework: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    com.zaxxer.hikari: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/bookverse.log
+    max-size: 10MB
+    max-history: 5
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bookverse_dev
+    username: bookverse_user
+    password: bookverse_pass
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+bookverse:
+  console:
+    enabled: true
+  logging:
+    level: DEBUG
+
+logging:
+  level:
+    com.bookverse: DEBUG
+    org.springframework: INFO
+    org.hibernate.SQL: DEBUG
+
+---
+# Docker Profile
+spring:
+  config:
+    activate:
+      on-profile: docker
+  
+  datasource:
+    url: jdbc:postgresql://postgres:5432/bookverse
+    username: bookverse_user
+    password: bookverse_pass
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+bookverse:
+  console:
+    enabled: true
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+  
+  h2:
+    console:
+      enabled: false
+
+bookverse:
+  api:
+    gutendex:
+      base-url: http://mock-gutendex:8080
+  console:
+    enabled: false
+
+logging:
+  level:
+    com.bookverse: DEBUG
+    org.springframework: ERROR
+    org.hibernate: ERROR
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+  
+  datasource:
+    url: jdbc:postgresql://postgres:5432/bookverse
+    username: bookverse_user
+    password: bookverse_pass
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+bookverse:
+  console:
+    enabled: false
+  logging:
+    level: WARN
+
+logging:
+  level:
+    com.bookverse: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+    root: WARN

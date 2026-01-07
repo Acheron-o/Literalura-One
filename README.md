@@ -1,33 +1,35 @@
 # 📖 LiterAlura - Interactive Book Management System
 
-Welcome to **LiterAlura**! This is a backend application developed in Java 25 with Spring Boot that serves as an interactive book catalog via console. The system consumes the public **Gutendex** API (Project Gutenberg), processes the data, and persists it in a relational database (PostgreSQL) for future queries.
+Welcome to **LiterAlura**! A modern Java-based book management system that integrates external API searches with local database persistence. Built for developers who value clean architecture and comprehensive testing.
 
-## Features
+## What Does It Do?
 
-1. **🔍 Search book by title:** Connects to the API and uses the intelligent search algorithm.
-2. **📚 List registered books:** Displays all books saved locally.
-3. **✍️ List registered authors:** Shows authors and their books.
-4. **📅 List authors alive in a specific year:** Historical author filter.
-5. **🌐 List books in a specific language:** Filter by language code (EN, PT, etc.).
+This application lets you search for books through an external API and maintain your own curated collection. Think of it as your personal library management system with the power of cloud-based book discovery.
+
+**Core Capabilities:**
+- Search any book title using intelligent API integration
+- Maintain a persistent local catalog of your favorite finds
+- Explore author collections and their complete works
+- Filter books by publication language
+- Discover authors who were alive during specific historical periods
+
+## Technical Foundation
+
+**Backend Stack:**
+- Java 25 LTS with Spring Boot 3.4.13
+- PostgreSQL 16 for data persistence
+- Spring Data JPA handling all database operations
+- Full Docker containerization for consistent deployment
+
+**Quality Assurance:**
+- Comprehensive JUnit 5 test coverage
+- Mockito-powered unit tests for business logic isolation
+- Integration tests using `@DataJpaTest` for repository layer validation
+- Database integrity checks running against actual PostgreSQL instances
+
+## Why This Architecture?
+
+The project demonstrates production-ready patterns: clean separation between API integration and data management, testable service layers, and containerized infrastructure. Whether you're building a portfolio piece or exploring Spring Boot best practices, this codebase showcases modern Java development done right.
 
 ---
-
-## 🛠️ Technologies Used
-
-* **Java 25 LTS:** Latest and most performant version of the language.
-* **Spring Boot 3.4.13:** Updated framework for productivity.
-* **Spring Data JPA:** Robust data persistence.
-* **PostgreSQL 16:** Modern relational database.
-* **Docker & Docker Compose:** Complete environment containerization.
-* **JUnit 5 & Mockito:** High-fidelity automated test suite.
-
----
-
-## 🧪 Robust Automated Tests
-
-The project uses a professional test suite to ensure reliability:
-
-* **Repository Tests (`DataJpaTest`):** Validates complex queries and database integrity (PostgreSQL 16).
-* **Service Unit Tests (`Mockito`):** Validates the search algorithm and filters in isolation and quickly.
-
 

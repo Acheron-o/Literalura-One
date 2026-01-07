@@ -1,4 +1,4 @@
--- BookVerse Database Initialization Script
+-- LiterAlura Database Initialization Script
 -- This script initializes the PostgreSQL database with proper configuration
 
 -- Set database encoding and collation
@@ -10,14 +10,14 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
 
 -- Set default privileges
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO bookverse_user;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO bookverse_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO literalura_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO literalura_user;
 
 -- Create search configuration for full-text search
-CREATE TEXT SEARCH CONFIGURATION bookverse_search (COPY = english);
+CREATE TEXT SEARCH CONFIGURATION literalura_search (COPY = english);
 
 -- Log initialization completion
 DO $$
 BEGIN
-    RAISE NOTICE 'BookVerse database initialized successfully';
+    RAISE NOTICE 'LiterAlura database initialized successfully';
 END $$;

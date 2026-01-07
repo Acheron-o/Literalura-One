@@ -1,11 +1,11 @@
-# BookVerse Multi-Stage Dockerfile
+# LiterAlura Multi-Stage Dockerfile
 # Optimized for production with security best practices
 
 # Build Stage
 FROM maven:3.9.6-eclipse-temurin-25 AS build
 
 # Set build arguments
-ARG JAR_FILE=target/bookverse.jar
+ARG JAR_FILE=target/literalura.jar
 
 # Set working directory
 WORKDIR /app
@@ -28,8 +28,8 @@ RUN ./mvnw clean package -DskipTests -B
 FROM eclipse-temurin:25-jre-alpine
 
 # Create non-root user for security
-RUN addgroup -g 1000 bookverse && \
-    adduser -D -s /bin/sh -u 1000 -G bookverse bookverse
+RUN addgroup -g 1000 literalura && \
+    adduser -D -s /bin/sh -u 1000 -G literalura literalura
 
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
@@ -39,17 +39,17 @@ WORKDIR /app
 
 # Create logs directory
 RUN mkdir -p /app/logs && \
-    chown -R bookverse:bookverse /app
+    chown -R literalura:literalura /app
 
 # Copy the built JAR from build stage
-ARG JAR_FILE=target/bookverse.jar
+ARG JAR_FILE=target/literalura.jar
 COPY --from=build /app/${JAR_FILE} app.jar
 
 # Set proper ownership
-RUN chown bookverse:bookverse app.jar
+RUN chown literalura:literalura app.jar
 
 # Switch to non-root user
-USER bookverse
+USER literalura
 
 # Expose application port
 EXPOSE 8080

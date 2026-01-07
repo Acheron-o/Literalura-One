@@ -3,11 +3,11 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: bookverse-postgres
+    container_name: literalura-postgres
     environment:
-      POSTGRES_DB: bookverse
-      POSTGRES_USER: bookverse_user
-      POSTGRES_PASSWORD: bookverse_pass
+      POSTGRES_DB: literalura
+      POSTGRES_USER: literalura_user
+      POSTGRES_PASSWORD: literalura_pass
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     ports:
       - "5432:5432"
@@ -15,9 +15,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     networks:
-      - bookverse-network
+      - literalura-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U bookverse_user -d bookverse"]
+      test: ["CMD-SHELL", "pg_isready -U literalura_user -d literalura"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,12 +34,12 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - JAR_FILE=target/bookverse.jar
-    container_name: bookverse-app
+        - JAR_FILE=target/literalura.jar
+    container_name: literalura-app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bookverse
-      SPRING_DATASOURCE_USERNAME: bookverse_user
-      SPRING_DATASOURCE_PASSWORD: bookverse_pass
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/literalura
+      SPRING_DATASOURCE_USERNAME: literalura_user
+      SPRING_DATASOURCE_PASSWORD: literalura_pass
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_JPA_SHOW_SQL: false
       SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: true
@@ -52,7 +52,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - bookverse-network
+      - literalura-network
     volumes:
       - app_logs:/app/logs
     restart: unless-stopped
@@ -64,11 +64,11 @@ services:
 
   test:
     image: maven:3.9.6-eclipse-temurin-25
-    container_name: bookverse-test
+    container_name: literalura-test
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bookverse_test
-      SPRING_DATASOURCE_USERNAME: bookverse_user
-      SPRING_DATASOURCE_PASSWORD: bookverse_pass
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/literalura_test
+      SPRING_DATASOURCE_USERNAME: literalura_user
+      SPRING_DATASOURCE_PASSWORD: literalura_pass
       SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
       SPRING_JPA_SHOW_SQL: false
       SPRING_PROFILES_ACTIVE: test
@@ -81,7 +81,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - bookverse-network
+      - literalura-network
     command: ["mvn", "clean", "test", "-Dspring.profiles.active=test"]
     profiles:
       - test
@@ -100,7 +100,7 @@ volumes:
     driver: local
 
 networks:
-  bookverse-network:
+  literalura-network:
     driver: bridge
     ipam:
       config:

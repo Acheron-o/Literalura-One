@@ -1,4 +1,4 @@
-# BookVerse Application Configuration
+# LiterAlura Application Configuration
 # Spring Boot configuration for different environments
 
 spring:
@@ -6,12 +6,12 @@ spring:
     active: default
   
   application:
-    name: BookVerse
+    name: LiterAlura
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/bookverse
-    username: bookverse_user
-    password: bookverse_pass
+    url: jdbc:postgresql://localhost:5432/literalura
+    username: literalura_user
+    password: literalura_pass
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 20
@@ -46,7 +46,7 @@ spring:
         max-size: 16
         queue-capacity: 100
         keep-alive: 60s
-        thread-name-prefix: bookverse-
+        thread-name-prefix: literalura-
   
   cache:
     type: simple
@@ -57,7 +57,7 @@ spring:
       add-mappings: false
 
 # Application-specific configuration
-bookverse:
+literalura:
   api:
     gutendex:
       base-url: https://gutendex.com
@@ -70,11 +70,11 @@ bookverse:
   
   console:
     enabled: true
-    prompt: "BookVerse> "
+    prompt: "LiterAlura> "
   
   logging:
     level: INFO
-    file: logs/bookverse.log
+    file: logs/literalura.log
     max-size: 10MB
     max-files: 5
 
@@ -98,7 +98,7 @@ management:
 # Logging configuration
 logging:
   level:
-    com.bookverse: INFO
+    com.literalura: INFO
     org.springframework: WARN
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
@@ -107,7 +107,7 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
-    name: logs/bookverse.log
+    name: logs/literalura.log
     max-size: 10MB
     max-history: 5
 
@@ -119,9 +119,9 @@ spring:
       on-profile: dev
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/bookverse_dev
-    username: bookverse_user
-    password: bookverse_pass
+    url: jdbc:postgresql://localhost:5432/literalura_dev
+    username: literalura_user
+    password: literalura_pass
   
   jpa:
     hibernate:
@@ -134,7 +134,7 @@ spring:
     livereload:
       enabled: true
 
-bookverse:
+literalura:
   console:
     enabled: true
   logging:
@@ -142,7 +142,7 @@ bookverse:
 
 logging:
   level:
-    com.bookverse: DEBUG
+    com.literalura: DEBUG
     org.springframework: INFO
     org.hibernate.SQL: DEBUG
 
@@ -154,15 +154,15 @@ spring:
       on-profile: docker
   
   datasource:
-    url: jdbc:postgresql://postgres:5432/bookverse
-    username: bookverse_user
-    password: bookverse_pass
+    url: jdbc:postgresql://postgres:5432/literalura
+    username: literalura_user
+    password: literalura_pass
   
   jpa:
     hibernate:
       ddl-auto: update
 
-bookverse:
+literalura:
   console:
     enabled: true
 
@@ -189,7 +189,7 @@ spring:
     console:
       enabled: false
 
-bookverse:
+literalura:
   api:
     gutendex:
       base-url: http://mock-gutendex:8080
@@ -198,7 +198,7 @@ bookverse:
 
 logging:
   level:
-    com.bookverse: DEBUG
+    com.literalura: DEBUG
     org.springframework: ERROR
     org.hibernate: ERROR
 
@@ -210,9 +210,9 @@ spring:
       on-profile: prod
   
   datasource:
-    url: jdbc:postgresql://postgres:5432/bookverse
-    username: bookverse_user
-    password: bookverse_pass
+    url: jdbc:postgresql://postgres:5432/literalura
+    username: literalura_user
+    password: literalura_pass
     hikari:
       maximum-pool-size: 50
       minimum-idle: 10
@@ -222,7 +222,7 @@ spring:
       ddl-auto: validate
     show-sql: false
 
-bookverse:
+literalura:
   console:
     enabled: false
   logging:
@@ -230,7 +230,7 @@ bookverse:
 
 logging:
   level:
-    com.bookverse: INFO
+    com.literalura: INFO
     org.springframework: WARN
     org.hibernate: WARN
     root: WARN

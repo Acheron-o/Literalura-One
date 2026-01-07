@@ -19,5 +19,5 @@ CREATE TEXT SEARCH CONFIGURATION bookverse_search (COPY = english);
 -- Log initialization completion
 DO $$
 BEGIN
-    RAISE NOTICE 'BookVerse database initialized successfully';
+    RAISE NOTICE 'Literalura database initialized successfully';
 END $$;

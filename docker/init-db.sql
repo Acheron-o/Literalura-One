@@ -19,5 +19,9 @@ CREATE TEXT SEARCH CONFIGURATION literalura_search (COPY = english);
 -- Log initialization completion
 DO $$
 BEGIN
+<<<<<<< HEAD
     RAISE NOTICE 'LiterAlura database initialized successfully';
+=======
+    RAISE NOTICE 'Literalura database initialized successfully';
+>>>>>>> adf1ed401129b9668d77ac868af8f137f7126d7b
 END $$;

@@ -20,6 +20,9 @@ public class LiteraLuraService {
     @Autowired
     private AuthorRepository authorRepository;
 
+    @Autowired
+    private GutendexService gutendexService;
+
     private Scanner scanner = new Scanner(System.in);
 
     /**
@@ -52,9 +55,10 @@ public class LiteraLuraService {
         System.out.println("5. Find books by language");
         System.out.println("6. Find authors alive in a specific year");
         System.out.println("7. Search books by title");
+        System.out.println("8. Search books from Gutendex API");
         System.out.println("0. Exit");
         System.out.println("═".repeat(40));
-        System.out.print("Choose an option (0-7): ");
+        System.out.print("Choose an option (0-8): ");
     }
 
     /**
@@ -63,10 +67,10 @@ public class LiteraLuraService {
     private int getChoice() {
         try {
             int choice = Integer.parseInt(scanner.nextLine());
-            if (choice >= 0 && choice <= 7) {
+            if (choice >= 0 && choice <= 8) {
                 return choice;
             } else {
-                System.out.println("❌ Please enter a number between 0 and 7");
+                System.out.println("❌ Please enter a number between 0 and 8");
                 return getChoice();
             }
         } catch (NumberFormatException e) {
@@ -101,6 +105,9 @@ public class LiteraLuraService {
                 return true;
             case 7:
                 searchBooksByTitle();
+                return true;
+            case 8:
+                searchFromGutendexApi();
                 return true;
             case 0:
                 return false;
@@ -329,6 +336,80 @@ public class LiteraLuraService {
             for (Book book : books) {
                 System.out.println("- " + book);
             }
+        }
+    }
+    
+    /**
+     * Searches books from Gutendex API and allows saving to library.
+     */
+    private void searchFromGutendexApi() {
+        System.out.println("🌐 SEARCH FROM GUTENDEX API");
+        System.out.println("═".repeat(35));
+        
+        System.out.println("Choose search type:");
+        System.out.println("1. Search by title");
+        System.out.println("2. Search by author");
+        System.out.println("3. Search by language");
+        System.out.print("Choose (1-3): ");
+        
+        try {
+            int searchType = Integer.parseInt(scanner.nextLine());
+            List<GutendexBook> results = List.of();
+            
+            switch (searchType) {
+                case 1:
+                    System.out.print("Enter title to search: ");
+                    String title = scanner.nextLine();
+                    results = gutendexService.searchBooksByTitle(title);
+                    break;
+                case 2:
+                    System.out.print("Enter author name: ");
+                    String author = scanner.nextLine();
+                    results = gutendexService.searchBooksByAuthor(author);
+                    break;
+                case 3:
+                    System.out.print("Enter language code (e.g., en, es, pt): ");
+                    String language = scanner.nextLine();
+                    results = gutendexService.searchBooksByLanguage(language);
+                    break;
+                default:
+                    System.out.println("❌ Invalid search type");
+                    return;
+            }
+            
+            if (results.isEmpty()) {
+                System.out.println("📭 No books found in Gutendex API.");
+                return;
+            }
+            
+            System.out.println("\nFound " + results.size() + " books:");
+            for (int i = 0; i < results.size(); i++) {
+                System.out.println((i + 1) + ". " + results.get(i));
+            }
+            
+            System.out.print("\nEnter book number to save (0 to cancel): ");
+            int bookChoice = Integer.parseInt(scanner.nextLine());
+            
+            if (bookChoice > 0 && bookChoice <= results.size()) {
+                GutendexBook selectedBook = results.get(bookChoice - 1);
+                
+                // Convert and save book
+                Book book = gutendexService.convertToBook(selectedBook);
+                Author author = gutendexService.convertToAuthor(selectedBook);
+                
+                // Save author first
+                author = authorRepository.save(author);
+                book.setAuthor(author);
+                
+                // Save book
+                bookRepository.save(book);
+                System.out.println("✅ Book saved to your library!");
+            } else if (bookChoice != 0) {
+                System.out.println("❌ Invalid book number");
+            }
+            
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Please enter a valid number");
         }
     }
 }

@@ -7,6 +7,7 @@ Welcome to **LiteraLura**! A simple Java application that helps you manage your 
 LiteraLura lets you:
 - Add books to your personal library
 - Add authors and their information
+- Search books from Gutendex API (external book database)
 - Search books by title, language, or author
 - Find authors who were alive in specific years
 - View all your books and authors
@@ -16,6 +17,7 @@ LiteraLura lets you:
 - Java 25 or newer
 - Maven 3.9 or newer  
 - PostgreSQL database
+- Internet connection (for API searches)
 
 ## How to Set Up
 
@@ -35,7 +37,8 @@ LiteraLura lets you:
 3. **Use the application:**
    - A menu will appear in your console
    - Type the number of what you want to do
-   - Follow the simple prompts
+   - Follow simple prompts
+   - **Option 8** lets you search books from Gutendex API and save them to your library
 
 ## Project Structure
 
@@ -48,7 +51,10 @@ src/main/java/com/alura/literalura/
 ├── Book.java                      # Book model
 ├── Author.java                    # Author model
 ├── BookRepository.java            # Database operations for books
-└── AuthorRepository.java          # Database operations for authors
+├── AuthorRepository.java          # Database operations for authors
+├── GutendexService.java           # API integration service
+├── GutendexBook.java             # API book DTO
+└── GutendexResponse.java         # API response wrapper
 ```
 
 ## How It Works
@@ -57,6 +63,15 @@ src/main/java/com/alura/literalura/
 2. **LiteraLuraService.java** - Shows menus and handles user input
 3. **Book.java & Author.java** - Simple data classes
 4. **Repository classes** - Spring automatically handles database operations
+5. **GutendexService.java** - Connects to external Gutendex API to search books
+6. **DTO classes** - Handle API response format
+
+## API Integration
+
+The application uses **Gutendex API** (https://gutendex.com) to search for books:
+- Search by title, author, or language
+- Convert API results to local database entities
+- Save interesting books to your personal library
 ---
 
 Happy reading with LiteraLura! 📖

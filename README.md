@@ -22,7 +22,7 @@ LiteraLura lets you:
 1. **Create the database:**
    ```sql
    CREATE DATABASE literalura;
-   CREATE USER postgres WITH PASSWORD 'postgres';
+   CREATE USER postgres WITH PASSWORD 'your_password'; -- (Just an example. Make your own PASSWORD and USER and make sure to remember them)
    GRANT ALL PRIVILEGES ON DATABASE literalura TO postgres;
    ```
 
@@ -57,15 +57,6 @@ src/main/java/com/alura/literalura/
 2. **LiteraLuraService.java** - Shows menus and handles user input
 3. **Book.java & Author.java** - Simple data classes
 4. **Repository classes** - Spring automatically handles database operations
-
-## Perfect for Learning
-
-This project is designed to be beginner-friendly:
-- Simple, clean code with helpful comments
-- No complex patterns or over-engineering
-- Easy to understand and modify
-- Uses Spring Boot but keeps it simple
-
 ---
 
 Happy reading with LiteraLura! 📖
